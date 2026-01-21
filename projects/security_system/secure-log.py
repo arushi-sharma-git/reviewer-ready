@@ -33,7 +33,7 @@ def save_to_file(key, result):
 def main():
     keys_to_process = ["A1299BC9", "Z1234567", "B1211BC9"]
     
-    print("--- 🛡️ Processing Keys and Logging to File ---")
+    print("---  Processing Keys and Logging to File ---")
     
     for k in keys_to_process:
         status = check_key(k)

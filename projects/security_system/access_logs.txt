@@ -1,0 +1,6 @@
+Key: A1299BC9 | Result:  Access Granted
+Key: Z1234567 | Result: Rejected: Contains 'z'
+Key: B1211BC9 | Result:  Rejected: Math Sum Failed
+Key: A1299BC9 | Result:  Access Granted
+Key: Z1234567 | Result: Rejected: Contains 'z'
+Key: B1211BC9 | Result:  Rejected: Math Sum Failed
