@@ -36,15 +36,47 @@ def save_entry(key, status):
         json.dump(current_data, f, indent=4)
     print(f"✅ Record for {key} synced to Vault.")
 
-def main():
-    print("--- 🔐 JSON VAULT SYSTEM ---")
-    test_key = input("Enter key to log: ")
-   
-    save_entry(test_key, "✅ Access Granted")
-    
-    
+def search_vault(query):
+    """Searches the JSON vault for a specific key or status."""
     data = load_vault()
-    print(f"Total records in vault: {len(data)}")
+    # Using a list comprehension - very 'Pythonic' and efficient
+    results = [item for item in data if query.lower() in item['key'].lower() or query.lower() in item['status'].lower()]
+    
+    if results:
+        print(f"\n🔍 Found {len(results)} matches for '{query}':")
+        for r in results:
+            print(f"- {r['timestamp']} | {r['key']} | {r['status']}")
+    else:
+        print(f"\n❌ No matches found for '{query}'.")
+
+def main():
+    while True:
+        print("\n--- 🔐 ADVANCED JSON VAULT ---")
+        print("1. Log New Key")
+        print("2. Search Records") # <--- Make sure this line exists!
+        print("3. View Analytics")
+        print("4. Exit")
+        
+        choice = input("Select an option: ")
+        
+        if choice == "1":
+            k = input("Key: ")
+            s = input("Status (e.g., Access Granted): ")
+            save_entry(k, s)
+            
+        elif choice == "2": # <--- This is where the magic happens
+            q = input("Enter search term (key or status): ")
+            search_vault(q) # <--- CALLING the function you copied
+            
+        elif choice == "3":
+            generate_report()
+            
+        elif choice == "4":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice!")
+
 
 if __name__ == "__main__":
     main()
