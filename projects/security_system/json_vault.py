@@ -49,11 +49,29 @@ def search_vault(query):
     else:
         print(f"\n❌ No matches found for '{query}'.")
 
+
+def generate_report():
+    """Calculates and displays security statistics."""
+    data = load_vault()
+    if not data:
+        return
+    
+    total = len(data)
+   
+    passed = sum(1 for item in data if not item['flagged'])
+    failed = total - passed
+    
+    print("\n---  SECURITY ANALYTICS REPORT ---")
+    print(f"Total Scans: {total}")
+    print(f"Success Rate: {(passed/total)*100:.1f}%")
+    print(f"Flagged Threats: {failed}")
+    print("------------------------------------\n")
+
 def main():
     while True:
-        print("\n--- 🔐 ADVANCED JSON VAULT ---")
+        print("\n---  ADVANCED JSON VAULT ---")
         print("1. Log New Key")
-        print("2. Search Records") # <--- Make sure this line exists!
+        print("2. Search Records") 
         print("3. View Analytics")
         print("4. Exit")
         
@@ -64,10 +82,9 @@ def main():
             s = input("Status (e.g., Access Granted): ")
             save_entry(k, s)
             
-        elif choice == "2": # <--- This is where the magic happens
+        elif choice == "2": 
             q = input("Enter search term (key or status): ")
-            search_vault(q) # <--- CALLING the function you copied
-            
+            search_vault(q) 
         elif choice == "3":
             generate_report()
             
