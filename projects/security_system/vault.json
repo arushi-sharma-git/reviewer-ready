@@ -1,0 +1,32 @@
+[
+    {
+        "timestamp": "2026-01-23 21:49:16",
+        "key": "asd56rt9",
+        "status": "\u2705 Access Granted",
+        "flagged": false
+    },
+    {
+        "timestamp": "2026-01-23 21:59:44",
+        "key": "& \"C:/Users/Alok kumar sharma/AppData/Local/Microsoft/WindowsApps/python3.13.exe\" \"c:/Users/Alok kumar sharma/reviewer-ready/projects/security_system/json_vault.py\"",
+        "status": "\u2705 Access Granted",
+        "flagged": false
+    },
+    {
+        "timestamp": "2026-01-23 22:00:08",
+        "key": "ayf76hw8",
+        "status": "\u2705 Access Granted",
+        "flagged": false
+    },
+    {
+        "timestamp": "2026-01-23 22:02:47",
+        "key": "ahs98jd5",
+        "status": "\u2705 Access Granted",
+        "flagged": false
+    },
+    {
+        "timestamp": "2026-01-24 22:03:08",
+        "key": "AJD87YV9",
+        "status": "\u2705 Access Granted",
+        "flagged": false
+    }
+]

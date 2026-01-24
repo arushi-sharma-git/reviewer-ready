@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from utils import sanitize_input, is_key_safe
 
 VAULT_PATH = "projects/security_system/vault.json"
 
@@ -39,7 +40,7 @@ def save_entry(key, status):
 def search_vault(query):
     """Searches the JSON vault for a specific key or status."""
     data = load_vault()
-    # Using a list comprehension - very 'Pythonic' and efficient
+   
     results = [item for item in data if query.lower() in item['key'].lower() or query.lower() in item['status'].lower()]
     
     if results:
@@ -78,9 +79,16 @@ def main():
         choice = input("Select an option: ")
         
         if choice == "1":
-            k = input("Key: ")
-            s = input("Status (e.g., Access Granted): ")
-            save_entry(k, s)
+         raw_key = input("Enter Key: ")
+         clean_key = sanitize_input(raw_key) 
+    
+         is_valid, message = is_key_safe(clean_key) 
+    
+         if is_valid:
+          save_entry(clean_key, "✅ Access Granted")
+         else:
+             print(f"⚠️ {message}")
+            
             
         elif choice == "2": 
             q = input("Enter search term (key or status): ")
@@ -91,7 +99,7 @@ def main():
         elif choice == "4":
             print("Goodbye!")
             break
-        else:
+    else:
             print("Invalid choice!")
 
 
