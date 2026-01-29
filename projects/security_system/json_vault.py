@@ -1,107 +1,79 @@
 import json
 import os
 from datetime import datetime
+
+# Import our custom modules
+from config import VAULT_FILE, ADMIN_SECRET
 from utils import sanitize_input, is_key_safe
 
-VAULT_PATH = "projects/security_system/vault.json"
-
 def load_vault():
-    """Safely loads the JSON database."""
-    if not os.path.exists(VAULT_PATH):
+    """Safely loads the JSON database using path from config."""
+    if not os.path.exists(VAULT_FILE):
         return []
     try:
-        with open(VAULT_PATH, "r") as f:
+        with open(VAULT_FILE, "r") as f:
             return json.load(f)
-    except json.JSONDecodeError:
-       
-        print(" Warning: Vault file corrupted. Starting fresh.")
+    except (json.JSONDecodeError, FileNotFoundError):
         return []
 
 def save_entry(key, status):
     """Adds a new record to the JSON database."""
-   
     entry = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "key": key,
         "status": status,
-        "flagged": "❌" in status 
+        "flagged": "❌" in status or "Fail" in status
     }
 
-   
     current_data = load_vault()
-    
-   
     current_data.append(entry)
     
-    with open(VAULT_PATH, "w") as f:
+    with open(VAULT_FILE, "w") as f:
         json.dump(current_data, f, indent=4)
-    print(f"✅ Record for {key} synced to Vault.")
 
 def search_vault(query):
-    """Searches the JSON vault for a specific key or status."""
+    """Searches records for a specific key or status."""
     data = load_vault()
-   
-    results = [item for item in data if query.lower() in item['key'].lower() or query.lower() in item['status'].lower()]
+    results = [item for item in data if query.lower() in item['key'].lower()]
     
     if results:
-        print(f"\n🔍 Found {len(results)} matches for '{query}':")
+        print(f"\n🔍 Matches found: {len(results)}")
         for r in results:
             print(f"- {r['timestamp']} | {r['key']} | {r['status']}")
     else:
-        print(f"\n❌ No matches found for '{query}'.")
-
-
-def generate_report():
-    """Calculates and displays security statistics."""
-    data = load_vault()
-    if not data:
-        return
-    
-    total = len(data)
-   
-    passed = sum(1 for item in data if not item['flagged'])
-    failed = total - passed
-    
-    print("\n---  SECURITY ANALYTICS REPORT ---")
-    print(f"Total Scans: {total}")
-    print(f"Success Rate: {(passed/total)*100:.1f}%")
-    print(f"Flagged Threats: {failed}")
-    print("------------------------------------\n")
+        print("\n❌ No records match that search.")
 
 def main():
+    print(f"--- 🔐 GATEKEEPER SYSTEM (Admin: {ADMIN_SECRET[0:4]}***) ---")
+    
     while True:
-        print("\n---  ADVANCED JSON VAULT ---")
-        print("1. Log New Key")
-        print("2. Search Records") 
-        print("3. View Analytics")
-        print("4. Exit")
+        print("\n1. Log New Key")
+        print("2. Search Vault")
+        print("3. Exit")
         
-        choice = input("Select an option: ")
+        choice = input("\nSelect Option: ")
         
         if choice == "1":
-         raw_key = input("Enter Key: ")
-         clean_key = sanitize_input(raw_key) 
-    
-         is_valid, message = is_key_safe(clean_key) 
-    
-         if is_valid:
-          save_entry(clean_key, "✅ Access Granted")
-         else:
-             print(f"⚠️ {message}")
+            raw_key = input("Enter Key: ")
+            clean_key = sanitize_input(raw_key)
             
+            # Use our Regex validator from utils.py
+            is_valid, msg = is_key_safe(clean_key)
             
-        elif choice == "2": 
-            q = input("Enter search term (key or status): ")
-            search_vault(q) 
-        elif choice == "3":
-            generate_report()
-            
-        elif choice == "4":
-            print("Goodbye!")
-            break
-    else:
-            print("Invalid choice!")
+            if is_valid:
+                save_entry(clean_key, "✅ Access Granted")
+                print(f"Success: {clean_key} recorded.")
+            else:
+                print(f"⚠️ {msg}")
+                save_entry(clean_key, f"❌ Rejected: {msg}")
 
+        elif choice == "2":
+            q = input("Search for key: ")
+            search_vault(q)
+
+        elif choice == "3":
+            print("Shutting down...")
+            break
 
 if __name__ == "__main__":
     main()
