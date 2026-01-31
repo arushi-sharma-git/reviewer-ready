@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from cloud_sync import fetch_blacklisted_keys
 
 # Import our custom modules
 from config import VAULT_FILE, ADMIN_SECRET
@@ -56,16 +57,19 @@ def main():
         if choice == "1":
             raw_key = input("Enter Key: ")
             clean_key = sanitize_input(raw_key)
-            
-            # Use our Regex validator from utils.py
             is_valid, msg = is_key_safe(clean_key)
             
+            # --- NEW CLOUD CHECK ---
+            blacklisted, cloud_msg = fetch_blacklisted_keys()
+            if blacklisted and clean_key in blacklisted:
+                is_valid = False
+                msg = "🚨 SECURITY ALERT: Key found in Cloud Blacklist!"
+            # -----------------------
+
             if is_valid:
                 save_entry(clean_key, "✅ Access Granted")
-                print(f"Success: {clean_key} recorded.")
             else:
                 print(f"⚠️ {msg}")
-                save_entry(clean_key, f"❌ Rejected: {msg}")
 
         elif choice == "2":
             q = input("Search for key: ")
