@@ -1,15 +1,12 @@
-import random
+import requests
 
-def fetch_blacklisted_keys():
-    """
-    Simulates fetching a list of compromised keys from a remote server.
-    In a real app, you'd use the 'requests' library here.
-    """
-    # Simulated remote database of leaked keys
-    leaked_keys = ["Z1234567", "X9999999", "B1111111"]
-    
-    # Simulate a network "glitch" (10% chance)
-    if random.random() < 0.1:
-        return None, "Connection Timeout"
-    
-    return leaked_keys, "Success"
+def get_network_info():
+    """Fetches the user's public IP using a real API."""
+    try:
+        # We use a 3-second timeout so the program doesn't hang if internet is slow
+        response = requests.get("https://api.ipify.org?format=json", timeout=3)
+        if response.status_code == 200:
+            return response.json().get("ip"), "Success"
+        return "Unknown", "API Error"
+    except requests.RequestException:
+        return "Offline", "Connection Failed"
