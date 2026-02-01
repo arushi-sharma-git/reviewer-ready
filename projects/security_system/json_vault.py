@@ -1,9 +1,8 @@
 import json
 import os
 from datetime import datetime
-from cloud_sync import fetch_blacklisted_keys
+from cloud_sync import get_network_info  
 
-# Import our custom modules
 from config import VAULT_FILE, ADMIN_SECRET
 from utils import sanitize_input, is_key_safe
 
@@ -18,11 +17,15 @@ def load_vault():
         return []
 
 def save_entry(key, status):
-    """Adds a new record to the JSON database."""
+    """Adds a new record including the user's Public IP."""
+    
+    ip_address, network_status = get_network_info()
+
     entry = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "key": key,
         "status": status,
+        "ip_address": ip_address,  # <--- New field added
         "flagged": "❌" in status or "Fail" in status
     }
 
@@ -31,6 +34,8 @@ def save_entry(key, status):
     
     with open(VAULT_FILE, "w") as f:
         json.dump(current_data, f, indent=4)
+    
+    print(f"🌐 Logged from IP: {ip_address} ({network_status})")
 
 def search_vault(query):
     """Searches records for a specific key or status."""
@@ -59,17 +64,17 @@ def main():
             clean_key = sanitize_input(raw_key)
             is_valid, msg = is_key_safe(clean_key)
             
-            # --- NEW CLOUD CHECK ---
-            blacklisted, cloud_msg = fetch_blacklisted_keys()
-            if blacklisted and clean_key in blacklisted:
-                is_valid = False
-                msg = "🚨 SECURITY ALERT: Key found in Cloud Blacklist!"
-            # -----------------------
+           
+            ip_address, net_status = get_network_info()
+            print(f" Connection Status: {net_status}")
+            # ---------------------------
 
             if is_valid:
-                save_entry(clean_key, "✅ Access Granted")
+                save_entry(clean_key, " Access Granted")
+                print(f"Success: {clean_key} recorded from {ip_address}.")
             else:
-                print(f"⚠️ {msg}")
+                print(f" {msg}")
+                save_entry(clean_key, f" Rejected: {msg}")
 
         elif choice == "2":
             q = input("Search for key: ")
