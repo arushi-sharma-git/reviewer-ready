@@ -1,5 +1,5 @@
 # System Configuration
-VAULT_FILE = "projects/security_system/vault.json"
+VAULT_FILE = ""
 LOG_FILE = "projects/security_system/access_logs.txt"
 
 
